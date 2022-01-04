@@ -1,0 +1,333 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PrivateSchool"
+        xmlns:PrivateSchoolModel="clr-namespace:PrivateSchoolModel;assembly=PrivateSchoolModel" x:Class="PrivateSchool.MainWindow"
+        mc:Ignorable="d"
+        Title="Școala Privată-Muzică și Artă" Height="450" Width="800" Loaded="Window_Loaded">
+    <Window.Resources>
+        <CollectionViewSource x:Key="profesorViewSource" d:DesignSource="{d:DesignInstance {x:Type PrivateSchoolModel:Profesor}, CreateList=True}"/>
+        <CollectionViewSource x:Key="materieViewSource" d:DesignSource="{d:DesignInstance {x:Type PrivateSchoolModel:Materie}, CreateList=True}"/>
+        <CollectionViewSource x:Key="profesorScoalasViewSource" Source="{Binding Scoalas, Source={StaticResource profesorViewSource}}"/>
+        <CollectionViewSource x:Key="elevViewSource" d:DesignSource="{d:DesignInstance {x:Type PrivateSchoolModel:Elev}, CreateList=True}"/>
+        <CollectionViewSource x:Key="notaViewSource" d:DesignSource="{d:DesignInstance {x:Type PrivateSchoolModel:Nota}, CreateList=True}"/>
+        <CollectionViewSource x:Key="elevCatalogsViewSource" Source="{Binding Catalogs, Source={StaticResource elevViewSource}}"/>
+        <ControlTemplate x:Key="validationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <Style x:Key="textBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)/ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid >
+        <TabControl x:Name="tbCtrlPrivateSchool" HorizontalAlignment="Left" Height="421" VerticalAlignment="Top" Width="644" Margin="0,0,0,-0.333" Background="#FFFFC9C9">
+            <TabItem Header="Profesor">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFEB9292" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FFF7D2D2" DataContext="{StaticResource profesorViewSource}">
+                    <DataGrid x:Name="profesorDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="121,240,93.333,9.667" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="profIdColumn" Binding="{Binding ProfId}" Header="Prof Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="numeprofColumn" Binding="{Binding numeprof}" Header="Nume profesor" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="prenumeprofColumn" Binding="{Binding prenumeprof}" Header="Prenume profesor" Width="SizeToHeader"/>
+                            <DataGridTemplateColumn x:Name="data_angajareColumn" Header="Data angajare" Width="SizeToHeader">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <DatePicker SelectedDate="{Binding data_angajare, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid x:Name="grid1" HorizontalAlignment="Left" Margin="121,30,0,0" VerticalAlignment="Top" Width="400">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Data angajare:" Grid.Column="0" HorizontalAlignment="Left" Margin="3,31,0,7" Grid.Row="2" VerticalAlignment="Center" Grid.RowSpan="2"/>
+                        <DatePicker x:Name="data_angajareDatePicker" Grid.Column="1" HorizontalAlignment="Left" Margin="2.333,0,-172.333,7" Grid.Row="3" SelectedDate="{Binding data_angajare, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Height="25" Width="306"/>
+                        <Label Content="Nume profesor:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="numeprofTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="2.333,3,-175.667,4" Grid.Row="1" Text="{Binding numeprof, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="306" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}"/>
+                        <Label Content="Prenume profesor:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="prenumeprofTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="26" Margin="2.333,1,-175,5" Grid.Row="2" Text="{Binding prenumeprof, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="306" Validation.ErrorTemplate="{StaticResource validationTemplate}" Style="{StaticResource textBoxInError}"/>
+                        <Label Content="Prof Id:" HorizontalAlignment="Left" Margin="3,4,0,2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="profIdTextBox" HorizontalAlignment="Left" Height="22" Margin="2.333,0,0,10" Text="{Binding ProfId, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="42" IsEnabled="False" Grid.Column="1"/>
+                    </Grid>
+                    <Button x:Name="btnPrev" Content="Prev" HorizontalAlignment="Left" Height="29" Margin="121,206,0,0" VerticalAlignment="Top" Width="105" Click="btnPrev_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                    <Button x:Name="btnNext" Content="Next" HorizontalAlignment="Left" Height="29" Margin="440,206,0,0" VerticalAlignment="Top" Width="104" Click="btnNext_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Materie">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFEB9292" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FFF7D2D2" DataContext="{StaticResource materieViewSource}">
+                    <DataGrid x:Name="materieDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="111,223,99.333,-0.333" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="materieIdColumn" Binding="{Binding MaterieId}" Header="Materie Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="mclasaColumn" Binding="{Binding mclasa}" Header="Clasa predării" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="mdenumireColumn" Binding="{Binding mdenumire}" Header="Denumire materie" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid x:Name="grid2" HorizontalAlignment="Left" Margin="111,39,0,0" VerticalAlignment="Top" Width="427">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Materie Id:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="materieIdTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="3.333,4,0,10" Grid.Row="0" Text="{Binding MaterieId, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="37" IsEnabled="False"/>
+                        <Label Content="Clasa predării:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="mclasaTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="3.333,4,-179.667,3" Grid.Row="1" Text="{Binding mclasa, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="309"/>
+                        <Label Content="Denumire materie:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="mdenumireTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="28" Margin="3.333,4,-179,0" Grid.Row="2" Text="{Binding mdenumire, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="309"/>
+                    </Grid>
+                    <Button x:Name="btnPrev1" Content="Prev" HorizontalAlignment="Left" Height="29" Margin="111,189,0,0" VerticalAlignment="Top" Width="100" Click="btnPrev1_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                    <Button x:Name="btnNext1" Content="Next" HorizontalAlignment="Left" Height="29" Margin="445,189,0,0" VerticalAlignment="Top" Width="93" Click="btnNext1_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Scoala">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFEB9292" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FFF7D2D2" DataContext="{StaticResource profesorScoalasViewSource}">
+                    <Label Content="Profesor :" Grid.Column="0" HorizontalAlignment="Left" Margin="83,47,0,319.667" VerticalAlignment="Center"/>
+                    <Label Content="Materie predată:" Grid.Column="0" HorizontalAlignment="Left" Margin="333,47,0,319.667" VerticalAlignment="Center"/>
+
+                    <ComboBox x:Name="cmbProfesor" HorizontalAlignment="Left" Margin="145,47,0,0" VerticalAlignment="Top" Width="119" SelectedValue="{Binding ElementName=scoalasDataGrid,Path=SelectedItem.ProfId,Mode=OneWay}" Height="26">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} {1}">
+                                            <Binding Path="numeprof"/>
+                                            <Binding Path="prenumeprof"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ComboBox x:Name="cmbMaterie" HorizontalAlignment="Left" Margin="435,47,0,0" VerticalAlignment="Top" Width="128" SelectedValue="{Binding ElementName=scoalasDataGrid,Path=SelectedItem.MaterieId,Mode=OneWay}" Height="26">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} - {1}">
+                                            <Binding Path="mclasa"/>
+                                            <Binding Path="mdenumire"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <DataGrid x:Name="scoalasDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="83,154,74.333,9.667" RowDetailsVisibilityMode="VisibleWhenSelected" IsSynchronizedWithCurrentItem="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="NumeprofColumn" Binding="{Binding numeprof}" Header="Nume profesor" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="PrenumeprofColumn" Binding="{Binding prenumeprof}" Header="Prenume profesor" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="MclasaColumn" Binding="{Binding mclasa}" Header="Clasa predării" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="MdenumireColumn" Binding="{Binding mdenumire}" Header="Denumire materie" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Elev">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFEB9292" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FFF7D2D2" DataContext="{StaticResource elevViewSource}">
+                    <DataGrid x:Name="elevDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="105,235,85.333,9.667" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="elevIdColumn" Binding="{Binding ElevId}" Header="Elev Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="numeColumn" Binding="{Binding nume}" Header="Nume elev" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="prenumeColumn" Binding="{Binding prenume}" Header="Prenume elev" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid x:Name="grid3" HorizontalAlignment="Left" Margin="105,53,0,0" VerticalAlignment="Top" Width="447">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Elev Id:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="elevIdTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="18" Margin="3.667,4,0,10" Grid.Row="0" Text="{Binding ElevId, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="37" IsEnabled="False"/>
+                        <Label Content="Nume elev:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="numeTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="3.667,4,-221,3" Grid.Row="1" Text="{Binding nume, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="352"/>
+                        <Label Content="Prenume elev:" Grid.Column="0" HorizontalAlignment="Left" Margin="3" Grid.Row="2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="prenumeTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="25" Margin="3.667,4,-220.333,3" Grid.Row="2" Text="{Binding prenume, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="352"/>
+                    </Grid>
+                    <Button x:Name="btnPrev2" Content="Prev" HorizontalAlignment="Left" Height="29" Margin="105,201,0,0" VerticalAlignment="Top" Width="99" Click="btnPrev_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                    <Button x:Name="btnNext2" Content="Next" HorizontalAlignment="Left" Height="29" Margin="461,201,0,0" VerticalAlignment="Top" Width="91" Click="btnNext_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Catalog">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFEB9292" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FFF7D2D2" DataContext="{StaticResource elevCatalogsViewSource}">
+                    <DataGrid x:Name="catalogsDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="103,198,106.333,9.667" RowDetailsVisibilityMode="VisibleWhenSelected" IsSynchronizedWithCurrentItem="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="NumeColumn" Binding="{Binding nume}" Header="Nume elev" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="PrenumeColumn" Binding="{Binding prenume}" Header="Prenume elev" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="Nota1Column" Binding="{Binding nota1}" Header="Nota primită" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="DetaliiColumn" Binding="{Binding detalii}" Header="Observații notă" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Label Content="Elev:" Grid.Column="0" HorizontalAlignment="Left" Margin="103,53,0,313.667" VerticalAlignment="Center"/>
+
+                    <ComboBox x:Name="cmbElev" HorizontalAlignment="Left" Margin="141,57,0,0" VerticalAlignment="Top" Width="120"  SelectedValue="{Binding ElementName=catalogsDataGrid,Path=SelectedItem.ElevId,Mode=OneWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} {1}">
+                                            <Binding Path="nume"/>
+                                            <Binding Path="prenume"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Label Content="Nota:" Grid.Column="0" HorizontalAlignment="Left" Margin="367,53,0,313.667" VerticalAlignment="Center"/>
+
+                    <ComboBox x:Name="cmbNota" HorizontalAlignment="Left" Margin="411,57,0,0" VerticalAlignment="Top" Width="120"  SelectedValue="{Binding ElementName=catalogsDataGrid,Path=SelectedItem.NotaId,Mode=OneWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} {1}">
+                                            <Binding Path="nota1"/>
+                                            <Binding Path="detalii"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Nota">
+                <TabItem.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF0F0F0" Offset="0"/>
+                        <GradientStop Color="#FFEB9292" Offset="1"/>
+                    </LinearGradientBrush>
+                </TabItem.Background>
+                <Grid Background="#FFF7D2D2" DataContext="{StaticResource notaViewSource}">
+                    <DataGrid x:Name="notaDataGrid" AutoGenerateColumns="False" EnableRowVirtualization="True" ItemsSource="{Binding}" Margin="121,230,91.333,9.667" RowDetailsVisibilityMode="VisibleWhenSelected">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn x:Name="notaIdColumn" Binding="{Binding NotaId}" Header="Nota Id" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="nota1Column" Binding="{Binding nota1}" Header="Nota" Width="SizeToHeader"/>
+                            <DataGridTextColumn x:Name="detaliiColumn" Binding="{Binding detalii}" Header="Detalii" Width="SizeToHeader"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Grid x:Name="grid4" HorizontalAlignment="Left" Margin="121,29,0,0" VerticalAlignment="Top" Height="130" Width="425">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="89.307"/>
+                            <ColumnDefinition Width="38.693"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Observații notă:" Grid.Column="0" HorizontalAlignment="Left" Margin="0,5,0,3.667" Grid.Row="2" VerticalAlignment="Center"/>
+                        <TextBox x:Name="detaliiTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="34" Margin="3,3.667,-201.667,1" Grid.Row="2" Text="{Binding detalii, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="328" Grid.ColumnSpan="2"/>
+                        <Label Content="Nota elev:" Grid.Column="0" HorizontalAlignment="Left" Margin="3,3.333,0,4" Grid.Row="1" VerticalAlignment="Center"/>
+                        <TextBox x:Name="nota1TextBox" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="3,7.667,-201.667,5.333" Grid.Row="1" Text="{Binding nota1, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="328" Grid.ColumnSpan="2"/>
+                        <Label Content="Nota Id:" HorizontalAlignment="Left" Margin="3,5,0,3" VerticalAlignment="Center"/>
+                        <TextBox x:Name="notaIdTextBox" Grid.Column="1" HorizontalAlignment="Left" Height="21" Margin="3,6,0,10.333" Text="{Binding NotaId, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" VerticalAlignment="Center" Width="39" IsEnabled="False"/>
+                    </Grid>
+                    <Button x:Name="btnPrev3" Content="Prev" HorizontalAlignment="Left" Height="29" Margin="121,196,0,0" VerticalAlignment="Top" Width="91" Click="btnPrev_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                    <Button x:Name="btnNext3" Content="Next" HorizontalAlignment="Left" Height="29" Margin="455,196,0,0" VerticalAlignment="Top" Width="91" Click="btnNext_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <GroupBox x:Name="gbOperations" Button.Click="gbOperations_Click" Header="Operații" HorizontalAlignment="Left" Height="112" VerticalAlignment="Top" Width="123" Margin="660,57,0,0" BorderBrush="#FFE82869">
+            <GroupBox.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="#FFC23737" Offset="0.003"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </RadialGradientBrush>
+            </GroupBox.Background>
+            <StackPanel x:Name="spOperations" HorizontalAlignment="Left" Height="61" Margin="26,10,0,0" VerticalAlignment="Top" Width="60">
+                <Button x:Name="btnAdd" Content="Adaugă" Click="btnAdd_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                <Button x:Name="btnEdit" Content="Editează" Click="btnEdit_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+                <Button x:Name="btnDelete" Content="Șterge" Click="btnDelete_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox x:Name="gbActions" Header="Acțiuni" HorizontalAlignment="Left" Height="111" VerticalAlignment="Top" Width="123" Margin="660,250,0,0" BorderBrush="#FFE82869">
+            <GroupBox.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="#FFC23737" Offset="0.003"/>
+                    <GradientStop Color="White" Offset="1"/>
+                </RadialGradientBrush>
+            </GroupBox.Background>
+            <StackPanel x:Name="spActions" HorizontalAlignment="Left" Height="56" Margin="30,26,0,0" VerticalAlignment="Top" Width="52">
+                <Button x:Name="btnSave" Content="Salvează" Click="btnSave_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="IsEnabled" Value="false" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding ElementName=numeprofTextBox, Path=(Validation.HasError)}" Value="false" />
+                                        <Condition Binding="{Binding ElementName=prenumeprofTextBox, Path=(Validation.HasError)}" Value="false" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="true" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button x:Name="btnCancel" Content="Renunță" Click="btnCancel_Click" Background="#FFEEA9A9" BorderBrush="White" FontWeight="Bold"/>
+            </StackPanel>
+        </GroupBox>
+
+    </Grid>
+</Window>
